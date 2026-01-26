@@ -1,19 +1,13 @@
-rootProject.name = "CloudstreamPlugins"
-
-// This file sets what projects are included.
-// All new projects should get automatically included unless specified in the "disabled" variable.
-
-val disabled = listOf<String>()
-
-File(rootDir, ".").eachDir { dir ->
-    if (!disabled.contains(dir.name) && File(dir, "build.gradle.kts").exists()) {
-        include(dir.name)
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
     }
 }
 
-fun File.eachDir(block: (File) -> Unit) {
-    listFiles()?.filter { it.isDirectory }?.forEach { block(it) }
-}
+val disabled = listOf<String>()  // Add folder names here to disable, e.g., listOf("ExampleProvider")
 
-// To only include a single project, comment out the previous lines (except the first one), and include your plugin like so:
-// include("PluginName")
+rootDir.listFiles()?.filter { it.isDirectory && !disabled.contains(it.name) && it.name != "gradle" && it.name != ".github" && it.name != ".git" && !it.name.startsWith(".") }?.forEach {
+    include(":${it.name}")
+}
