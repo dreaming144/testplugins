@@ -38,7 +38,7 @@ subprojects {
 
     cloudstream {
         // when running through github workflow, GITHUB_REPOSITORY should contain current repository name
-        setRepo(System.getenv("GITHUB_REPOSITORY") ?: "dreaming144/TestPlugins")
+        setRepo(System.getenv("GITHUB_REPOSITORY") ?: "dreaming144/testplugins")
     }
 
     android {
@@ -61,7 +61,8 @@ subprojects {
                 freeCompilerArgs.addAll(
                     "-Xno-call-assertions",
                     "-Xno-param-assertions",
-                    "-Xno-receiver-assertions"
+                    "-Xno-receiver-assertions",
+                    "-Xskip-metadata-version-check"  // Add this to suppress metadata version errors
                 )
             }
         }
@@ -81,11 +82,3 @@ subprojects {
         implementation("com.github.Blatzar:NiceHttp:0.4.11") // HTTP Lib
         implementation("org.jsoup:jsoup:1.18.3") // HTML Parser
         // IMPORTANT: Do not bump Jackson above 2.13.1, as newer versions will
-        // break compatibility on older Android devices.
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1") // JSON Parser
-    }
-}
-
-task<Delete>("clean") {
-    delete(rootProject.layout.buildDirectory)
-}
