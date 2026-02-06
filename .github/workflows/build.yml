@@ -23,6 +23,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
+      - name: Debug Gradle Tasks
+        run: | 
+          ls -la  # List all files to verify structure
+          ./gradlew tasks --all --stacktrace  # List all tasks to see if :GayPornHubProvider:make is available
+
       - name: Build Plugin
         run: ./gradlew GayPornHubProvider:make --stacktrace
 
