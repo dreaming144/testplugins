@@ -99,4 +99,4 @@ class GayPornHubProvider : MainAPI() {
     private fun fixUrl(url: String): String {
         return if (url.startsWith("/")) mainUrl + url else url
     }
-}
+} 
