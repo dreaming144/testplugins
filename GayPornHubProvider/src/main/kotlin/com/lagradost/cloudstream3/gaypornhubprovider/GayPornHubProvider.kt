@@ -11,7 +11,7 @@ class GayPornHubProvider : MainAPI() {
     override val hasQuickSearch = false
     override val hasMainPage = true
     override val supportedTypes = setOf(TvType.NSFW)
-    override val lang = "en"
+    override var lang = "en"
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
         val homePages = arrayListOf<HomePageList>()
@@ -28,13 +28,13 @@ class GayPornHubProvider : MainAPI() {
         val categoryItems = categoriesDoc.select("div.category-wrapper").mapNotNull {
             val catName = it.select("a span").text().trim()
             val catUrl = fixUrl(it.select("a").attr("href"))
-            if (catName.isNotEmpty() && catUrl.contains("/gay")) { // Gay filter
-                MovieSearchResponse(catName, catUrl, this.name, TvType.NSFW, null)
+            if (catName.isNotEmpty() && catUrl.contains("/gay")) {
+                newMovieSearchResponse(catName, catUrl, TvType.NSFW) {}
             } else null
         }
-        if (categoryItems.isNotEmpty()) homePages.add(HomePageList("Gay Categories", categoryItems, isHorizontal = true))
+        if (categoryItems.isNotEmpty()) homePages.add(HomePageList("Gay Categories", categoryItems, true))
 
-        return HomePageResponse(homePages)
+        return newHomePageResponse(homePages)
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
@@ -50,16 +50,11 @@ class GayPornHubProvider : MainAPI() {
         val description = doc.select("div.videoInfo .description").text().trim()
         val tags = doc.select("div.categoriesWrapper a").map { it.text() }
 
-        return MovieLoadResponse(
-            name = title,
-            url = url,
-            apiName = this.name,
-            type = TvType.NSFW,
-            dataUrl = url,
-            posterUrl = poster,
-            plot = description,
-            tags = tags
-        )
+        return newMovieLoadResponse(title, url, TvType.NSFW, url) {
+            this.posterUrl = poster
+            this.plot = description
+            this.tags = tags
+        }
     }
 
     override suspend fun loadLinks(
@@ -74,7 +69,7 @@ class GayPornHubProvider : MainAPI() {
 
         if (videoUrl.isNotEmpty()) {
             callback.invoke(
-                ExtractorLink(
+                newExtractorLink(
                     source = this.name,
                     name = "",
                     url = videoUrl,
@@ -96,13 +91,9 @@ class GayPornHubProvider : MainAPI() {
         val href = fixUrl(titleElem.attr("href"))
         val poster = element.select("img").attr("data-src") ?: element.select("img").attr("src")
 
-        return MovieSearchResponse(
-            name = title,
-            url = href,
-            apiName = this.name,
-            type = TvType.NSFW,
-            posterUrl = poster
-        )
+        return newMovieSearchResponse(title, href, TvType.NSFW) {
+            this.posterUrl = poster
+        }
     }
 
     private fun fixUrl(url: String): String {
